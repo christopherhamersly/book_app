@@ -1,21 +1,18 @@
 'use strict';
 
-// Application Dependencies
+
 const express = require('express');
 const superagent = require('superagent');
 require('ejs');
 require('dotenv').config();
 
-// Application Setup
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Application Middleware
-  // body parser - takes the form data and parses it so that we can read it - translater
-app.use(express.urlencoded({ extended: true }));
-  // look in the public folder and serve files from it (index.html/ css/ frontend.js)
+
+app.use(express.urlencoded({ extended: true }));  
 app.use(express.static('public'));
-  // go look in the views folder for the ejs files
 app.set('view engine', 'ejs');
 
 //Routes
@@ -28,7 +25,7 @@ app.get('/hello', (request, response) => {
 });
 
 app.get('/searches', (request, response) => {
-  response.render('./searches/new.ejs');
+  response.render('pages/searches/show.ejs');
 });
 
 // app.get('/new', (request, response) => {
@@ -53,26 +50,29 @@ app.post('/searches', (request, response) => {
 
   superagent.get(url)
     .then(results => {
-      // console.log(results.body.items);
+      console.log(results.body.items);
       let bookArray = results.body.items;
-
       const finalBookArray = bookArray.map(book => {
+        console.log(book.volumeInfo.authors);
+        console.log(book.volumeInfo.imageLinks);
         return new Book(book.volumeInfo)
       });
 
       console.log(finalBookArray)
 
-      response.render('show.ejs', {searchResults: finalBookArray})
+      response.render('pages/searches/show.ejs', {searchResults: finalBookArray})
     })
 })
 
 
-// HELPER FUNCTIONS
-// Only show part of this to get students started
+// HELPER FUNCTION
 function Book(info) {
   const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
 
+  this.image = info.imageLinks.thumbnail ? info.imageLinks.thumbnail : 'https://i.imgur.com/J5LVHEL.jpg';
   this.title = info.title ? info.title : 'no title available';
+  this.author = info.author ? info.author : 'no author available';
+  this.description = info.description ? info.description : 'no description available';
 
 }
 
