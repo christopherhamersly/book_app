@@ -1,0 +1,61 @@
+img {
+ 
+ display:block;
+ margin-left: auto;
+ margin-right: auto;
+ width: 50%;
+
+ 
+
+}
+
+#title{
+  font-size: 25px;
+  font-family: Arial, Helvetica, sans-serif;
+  
+}
+h3 {
+ font-family: 'Montserrat', sans-serif;
+color: rgb(75, 75, 75);
+font-size: 45px;
+text-align: center;
+}
+
+h4 {
+  font-family: 'Roboto', sans-serif;
+color: rgb(75, 75, 75);
+font-size: 35px;
+text-align: center;
+}
+
+h5 {
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(75, 75, 75);
+  font-size: 25px;
+  text-align: center;
+}
+
+@media only screen and (min-width:960px) {
+
+  img{
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(75, 75, 75);
+    float: right;
+  }
+
+  h3{
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(75, 75, 75);
+  }
+
+  h4{
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(75, 75, 75);
+  }
+
+  h5{
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(75, 75, 75);
+  }
+
+}
