@@ -8,10 +8,33 @@
     <link rel="stylesheet" href="styles/icons.css"  type="text/css">
     <link rel="stylesheet" href="styles/modules.css"  type="text/css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,500&family=Roboto:wght@500&display=swap" rel="stylesheet">
-  </head>
+ </head>
   <body>
-    <main>
-      <h2>My Book Collection</h2>
+    <section>
+      <form action ="/addBook" method="post"></form>
+      <% myBooks.forEach(book => { %>
+        <div>
+           </span><%= book.title %></span>
+           </span><%= book.decription %></span>
+           </span><%= book.completion %></span>
+           <a href="/books/<% book.id %>">show details</a>
+        </div>
+        <input type=hidden name="title" value=<=%book.title%>
+        <input type=hidden name="authors" value=<=%book.authors%>
+        <input type=hidden name="description" value=<=%book.description%>
+        <input type=hidden name="description" value=<=%book.id%>
+        <button>add to my favorites</button>
+        <form>
+      <% }) %>
+    </section>
+  </body>
+
+
+
+
+
+
+</html>
 
     </main>
   </body>
