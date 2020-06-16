@@ -2,14 +2,20 @@
 <html lang="en">
   <head>
     <title>Book Collection</title>
+    <link rel="stylesheet" href="styles/reset.css"  type="text/css">
+    <link rel="stylesheet" href="styles/base.css"  type="text/css">
+    <link rel="stylesheet" href="styles/layout.css"  type="text/css">
+    <link rel="stylesheet" href="styles/icons.css"  type="text/css">
+    <link rel="stylesheet" href="styles/modules.css"  type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,500&family=Roboto:wght@500&display=swap" rel="stylesheet">
   </head>
   <body>
     <main>
         <% searchResults.forEach( book => { %>
             <img src="<%= book.image %>" alt="<% book.title %>"/>
             <h3> <%= book.title %></h3>
-            <h3> <%= book.author %></h3>
-            <h3> <%= book.description %></h3>
+            <h4> <%= book.author %></h4>
+            <h5> <%= book.description %></h5>
         <% }) %>
     </main>
   </body>
