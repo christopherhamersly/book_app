@@ -17,8 +17,12 @@ app.set('view engine', 'ejs');
 
 //Routes
 app.get('/', (request, response) => {
-  response.render('pages/searches/new.ejs');
+  response.render('pages/searches/index.ejs');
 });
+
+app.get('/booksearch', (request, response) => {
+  response.render('pages/searches/new.ejs')
+})
 
 app.get('/hello', (request, response) => {
   response.status(200).send('hello from the backend')
