@@ -11,21 +11,16 @@
  </head>
   <body>
     <section>
-      <form action ="/addBook" method="post"></form>
-      <% myBooks.forEach(book => { %>
+      <form action ="/addBook" method="post">
+      <% bookObject.forEach(book => { %>
         <div>
-           </span><%= book.title %></span>
-           </span><%= book.decription %></span>
-           </span><%= book.completion %></span>
+           <img src="<%= book.image %>" alt="picture of book"/>
+           <span><%= book.title%></span>
+           <span><%= book.author %></span>
            <a href="/books/<% book.id %>">show details</a>
         </div>
-        <input type=hidden name="title" value=<=%book.title%>
-        <input type=hidden name="authors" value=<=%book.authors%>
-        <input type=hidden name="description" value=<=%book.description%>
-        <input type=hidden name="description" value=<=%book.id%>
-        <button>add to my favorites</button>
-        <form>
-      <% }) %>
+        <% }) %>
+      </form>
     </section>
   </body>
 

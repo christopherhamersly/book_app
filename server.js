@@ -5,28 +5,35 @@ const express = require('express');
 const superagent = require('superagent');
 require('ejs');
 require('dotenv').config();
-
+const pg = require('pg');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const client = new pg.Client(process.env.DATABASE_URL);
 
 
-app.use(express.urlencoded({ extended: true }));  
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
-app.get('/', getBooks);
+// app.get('/', getBooks); 
 app.get('/add', showBook);
 // app.post('/add', addBook);
 app.get('/books/book_id', getBook);
 
 //Routes
 app.get('/', (request, response) => {
-  response.render('pages/searches/index.ejs');
-});
-
-app.get('/*', (request, response) => {
-  response.status(200).send('sorry cannot find that route')
+  //do a SQL query 
+  let sqlQuery = 'SELECT * FROM books'
+  return client.query(sqlQuery)
+    .then(resultsFromDatabase => {
+      if(resultsFromDatabase.rows.rowCount === 0){
+        response.render('pages/searches/new.ejs')
+      } else {response.render('pages/searches/index.ejs', {bookObject: resultsFromDatabase.rows});
+  //sending forward an object called bookObject
+      }
+    }).catch(error => console.log(error))
 })
+
 
 app.get('/booksearch', (request, response) => {
   response.render('pages/searches/new.ejs')
@@ -55,27 +62,25 @@ function getBook (request, response){
   let sql = 'SELECT * FROM books WHERE id = $1';
   let safeValue = [id];
 
-  client.query(sql, safeValue);
+  client.query(sql, safeValue)
     .then (sqlResults => {
       console.log(sqlResults.rows);
 
       response.status(200).render('index.ejs', {book: sqlResults.rows[0]});
     }
-      )
-      catch (err) 
-    } 
-
-
-
-function getBooks (request, response){
-  //get all of the tasks from my databse and display them on my index.ejs page
-  let sql = 'SELECT * FROM books;'
-  client.query(sql)
-    .then(sqlResults => {
-      let tasks = sqlResults.rows;
-      response.status(200).render('index.ejs', {myBooks: books})
-    })
+    )
+      
 }
+
+// function getBooks (request, response){
+//   //get all of the tasks from my databse and display them on my index.ejs page
+//   let sql = 'SELECT * FROM books;'
+//   client.query(sql)
+//     .then(sqlResults => {
+//       let tasks = sqlResults.rows;
+//       response.status(200).render('index.ejs', {myBooks: books})
+//     })
+// }
 function showBook(request, response) {
   //display the add form
   response.status(200).render('add.ejs')
@@ -136,6 +141,10 @@ function Book(info) {
   this.description = info.description ? info.description : 'no description available';
   this.isbn = info.industryIdentifiers[0].identifier ? info.industryIdentifiers[0].identifier : 'no isbn available'
 }
+
+app.get('*', (request, response) => {
+  response.status(200).send('sorry cannot find that route')
+})
 
 client.on('error', err => console.log(err));
 client.connect()
