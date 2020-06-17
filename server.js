@@ -64,13 +64,12 @@ function getBook (request, response){
 
   client.query(sql, safeValue)
     .then (sqlResults => {
+      if (id === safeValue) {
       console.log(sqlResults.rows);
-
-      response.status(200).render('index.ejs', {book: sqlResults.rows[0]});
-    }
+      response.status(200).render('details.ejs', {book: sqlResults.rows[0]});
+    } else (response.status(200)
     )
-      
-}
+});
 
 // function getBooks (request, response){
 //   //get all of the tasks from my databse and display them on my index.ejs page
@@ -86,21 +85,21 @@ function showBook(request, response) {
   response.status(200).render('add.ejs')
 }
 
-// function addBook(request, response) {
-//   //collect information from the form and add it to the database
-//   let {image, title, author, description, isbn} = request.body; 
-//   let sql = 'INSERT into BOOKS (image, title, author, description, isbn) VALUES ($1, $2, $3, $4, $5) RETURNING ID;';
-//   let safeValue = [image, title, author, description, isbn];
-//   client.query(sql, safeValue);
-//     .then(results => {
-//       console.log(results.rows);
-//       response.redirect('/')
-//       response.redirect(`/books/${id}`);
-//     }
-//   }).catch();
+function addBook(request, response) {
+  //collect information from the form and add it to the database
+  let {image, title, author, description, isbn} = request.body; 
+  let sql = 'INSERT into BOOKS (image, title, author, description, isbn) VALUES ($1, $2, $3, $4, $5) RETURNING ID;';
+  let safeValue = [image, title, author, description, isbn];
+  client.query(sql, safeValue);
+    .then(results => {
+      console.log(results.rows);
+      response.redirect('/')
+      response.redirect(`/books/${id}`);
+    }
+  }).catch();
 
 app.post('/searches', (request, response) => {
-  // console.log(request.body.search);
+  console.log(request.body.search);
   // { search: [ 'the great gatsby', 'title' ] }
   // { search: [ 'jeff noon', 'author' ] }
 
@@ -117,7 +116,7 @@ app.post('/searches', (request, response) => {
 
   superagent.get(url)
     .then(results => {
-      // console.log(results.body.items);
+      console.log(results.body.items);
       let bookArray = results.body.items;
       const finalBookArray = bookArray.map(book => {
         // on
@@ -133,7 +132,7 @@ app.post('/searches', (request, response) => {
 
 // HELPER FUNCTION
 function Book(info) {
-  const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
+  // const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
 
   this.image = info.imageLinks.thumbnail ? info.imageLinks.thumbnail : 'https://i.imgur.com/J5LVHEL.jpg';
   this.title = info.title ? info.title : 'no title available';
