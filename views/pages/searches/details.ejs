@@ -13,11 +13,12 @@
     <main>
       <h4 id="title">Best Books!</h4>
       <div id="container">
-        <% searchResults.forEach( book => { %>
+        <% bookObject2.forEach( book => { %>
             <img src="<%= book.image %>" alt="<% book.title %>"/>
             <h5> <%= book.title %></h5>
             <h6> <%= book.author %></h6>
             <h7> <%= book.isbn %></h7>
+            <button>Return to home</button>
         <% }) %>
       </div>
     </main>
