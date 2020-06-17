@@ -3,8 +3,11 @@ img {
  display:block;
  margin-left: auto;
  margin-right: auto;
- width: 50%;
- border: 5px solid white;
+ width: 30%;
+ border: 10px solid white;
+ padding-top: 130px;
+ padding-bottom: 20px;
+ 
 
 }
 
@@ -26,9 +29,14 @@ padding: 10px;
   margin-left: auto;
   margin-right: auto;
   width: 50%;
-  padding:15px 20px 20px 15px;
+  margin-top: 20px;
+  padding-top: 15px;
+  line-height: 15px;
+  padding-left: 10px;
+  font-family: Arial, Helvetica, sans-serif;
 
 }
+
 
 input{
   background-color: white;
@@ -36,8 +44,9 @@ input{
   margin-left: auto;
   margin-right: auto;
   width: 50%;
-  padding:20px;
+  padding:15px;
 }
+
 #title{
   font-size: 25px;
   font-family: Arial, Helvetica, sans-serif;
@@ -65,9 +74,32 @@ text-align: center;
 h5 {
   font-family: Arial, Helvetica, sans-serif;
   color: rgb(255, 255, 255);
-  background-color: black;
-  font-size: 25px;
+  padding-top: 20px;
+  font-size: 20px;
   text-align: center;
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+h6{
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  text-align: center;
+  padding-top: 5px;
+  padding-bottom: 
+}
+
+h7{
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+  text-align: center;
+
 }
 
 #submit-button{
@@ -81,11 +113,18 @@ h5 {
   width: 50%;
   margin-top: 20px;
 }
-
+span {
+  background-color: rgb(202, 202, 202);
+  display:block;
+  
+}
 #newContainer {
   background-color: rgb(219, 16, 16);
 }
-
+#radio {
+  float: left;
+  margin-bottom: 10px;
+}
 @media only screen and (min-width:960px) {
 
   img{
