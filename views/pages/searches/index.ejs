@@ -11,6 +11,7 @@
  </head>
   <body>
     <section>
+      <p>You have <%= bookObject.length %> books in your collection</p>
       <form action ="/addBook" method="post">
       <% bookObject.forEach(book => { %>
         <div>

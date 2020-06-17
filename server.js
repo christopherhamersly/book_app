@@ -15,10 +15,10 @@ const client = new pg.Client(process.env.DATABASE_URL);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
-// app.get('/', getBooks); 
 app.get('/add', showBook);
+app.get('/books/books:id', getBook);
+// app.get('/', getBooks); 
 // app.post('/add', addBook);
-app.get('/books/book_id', getBook);
 
 //Routes
 app.get('/', (request, response) => {
@@ -29,11 +29,10 @@ app.get('/', (request, response) => {
       if(resultsFromDatabase.rows.rowCount === 0){
         response.render('pages/searches/new.ejs')
       } else {response.render('pages/searches/index.ejs', {bookObject: resultsFromDatabase.rows});
-  //sending forward an object called bookObject
+        //sending forward an object called bookObject
       }
     }).catch(error => console.log(error))
 })
-
 
 app.get('/booksearch', (request, response) => {
   response.render('pages/searches/new.ejs')
@@ -64,16 +63,16 @@ function getBook (request, response){
 
   client.query(sql, safeValue)
     .then (sqlResults => {
-      console.log(sqlResults.rows);
-
-      response.status(200).render('index.ejs', {book: sqlResults.rows[0]});
-    }
-    )
-      
+      if (id === safeValue) {
+        console.log(sqlResults.rows);
+        response.status(200).render('details.ejs', {bookObject2: sqlResults.rows[0]});
+      } else (response.status(200)
+      )
+    });
 }
 
 // function getBooks (request, response){
-//   //get all of the tasks from my databse and display them on my index.ejs page
+//   //get all of the books from my databse and display them on my index.ejs page
 //   let sql = 'SELECT * FROM books;'
 //   client.query(sql)
 //     .then(sqlResults => {
@@ -91,19 +90,16 @@ function showBook(request, response) {
 //   let {image, title, author, description, isbn} = request.body; 
 //   let sql = 'INSERT into BOOKS (image, title, author, description, isbn) VALUES ($1, $2, $3, $4, $5) RETURNING ID;';
 //   let safeValue = [image, title, author, description, isbn];
-//   client.query(sql, safeValue);
+//   client.query(sql, safeValue)
 //     .then(results => {
 //       console.log(results.rows);
 //       response.redirect('/')
 //       response.redirect(`/books/${id}`);
-//     }
-//   }).catch();
+//     })
+// }
 
 app.post('/searches', (request, response) => {
   // console.log(request.body.search);
-  // { search: [ 'the great gatsby', 'title' ] }
-  // { search: [ 'jeff noon', 'author' ] }
-
   let query = request.body.search[0];
   let titleOrAuthor = request.body.search[1];
 
@@ -121,11 +117,11 @@ app.post('/searches', (request, response) => {
       let bookArray = results.body.items;
       const finalBookArray = bookArray.map(book => {
         // on
-        console.log(book.volumeInfo.industryIdentifiers[0].identifier);
+        // console.log(book.volumeInfo.industryIdentifiers[0].identifier);
         return new Book(book.volumeInfo)
       });
 
-      console.log(finalBookArray)
+      // console.log(finalBookArray)
 
       response.render('pages/searches/show.ejs', {searchResults: finalBookArray})
     })
@@ -133,7 +129,7 @@ app.post('/searches', (request, response) => {
 
 // HELPER FUNCTION
 function Book(info) {
-  const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
+  // const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
 
   this.image = info.imageLinks.thumbnail ? info.imageLinks.thumbnail : 'https://i.imgur.com/J5LVHEL.jpg';
   this.title = info.title ? info.title : 'no title available';
@@ -153,3 +149,4 @@ client.connect()
       console.log(`listening on ${PORT}`);
     })
   })
+
