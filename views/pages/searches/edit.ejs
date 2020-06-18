@@ -1,0 +1,20 @@
+
+<form action="/update/<%=bookObject2.id%>?_method=PUT" method="post">
+  <input type="text" name="image" value="<%= bookObject2.image %>" placeholder="image"/>
+  <input type="text" name="title" value="<%= bookObject2.title %>" placeholder="title"/>
+  <input type="text" name="author" value="<%= bookObject2.author %>" placeholder="Author"/>
+  <input type="text" name="description" value="<%= bookObject2.description %>"placeholder="Description"/>
+  <input type="text" name="isbn" value="<%= bookObject2.isbn %>" placeholder="title"/>
+  <button>EDIT BOOK</button>
+</form>
+
+
+<form action="/delete/<%=bookObject2.id%>?_method=DELETE" method="post">
+    <input type="hidden" name="image" value="<%= bookObject2.image %>" placeholder="image"/>
+    <input type="hidden" name="title" value="<%= bookObject2.title %>" placeholder="title"/>
+    <input type="hidden" name="author" value="<%= bookObject2.author %>" placeholder="Author"/>
+    <input type="hidden" name="description" value="<%= bookObject2.description %>"placeholder="Description"/>
+    <input type="hidden" name="isbn" value="<%= bookObject2.isbn %>" placeholder="title"/>
+    <button>DELETE BOOK</button>
+</form>
+

@@ -1,6 +1,5 @@
 'use strict';
 
-
 const express = require('express');
 const superagent = require('superagent');
 require('ejs');
@@ -10,96 +9,109 @@ const pg = require('pg');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const client = new pg.Client(process.env.DATABASE_URL);
+const methodOverride = require('method-override');
 
-
+// middleware
+// this allows us to see the request.body - parses it
 app.use(express.urlencoded({ extended: true }));
+// serves files from the public folder
 app.use(express.static('public'));
+// allows ejs to work - look in the views folder for your template
 app.set('view engine', 'ejs');
-app.get('/add', showBook);
-app.get('/books/books:id', getBook);
-// app.get('/', getBooks); 
-// app.post('/add', addBook);
+app.use(methodOverride('_method'));
+  
 
 //Routes
-app.get('/', (request, response) => {
-  //do a SQL query 
-  let sqlQuery = 'SELECT * FROM books'
+
+app.get('/', getBooks); // rendering our home page which shows all our saved books from our database
+app.get('/add', showSearchForm); // shows our search form
+app.get('/books/:id', getOneBook); // shows our detail page
+app.post('/searches', getBooksFromAPI); // takes in our search form information and displays our show.ejs page - results from our API
+app.post('/details', addToFavorites); // takes form data from the API and adds a book to our database and then redirects to a detail page
+app.put('/update/:bookId', updateBook );
+app.delete('/delete/:bookId', deleteBook);
+
+app.get('*', (request, response) => {
+  response.status(200).send('sorry cannot find that route')
+})
+
+//lets us translate our post to a put
+
+function updateBook(request, response){
+  //collect the information that needs to be updated
+  // console.log('this our params', request.params);
+  let bookId = request.params.bookId;
+  // console.log('form information to be updated');
+
+  let {image, title, author, description, isbn} = request.body;
+  console.log('request.body', request.body);
+  let sql = 'UPDATE books SET image=$1, title=$2, author=$3, description=$4, isbn=$5 WHERE id=$6;';
+
+  let safeValues = [image, title, author, description, isbn, bookId];
+
+  client.query(sql, safeValues)
+    .then(sqlResults => {
+      // console.log('sqlResuts',sqlResults);
+      response.redirect(`/books/${bookId}`);
+    }).catch(error => console.log(error))
+}
+
+function deleteBook(request, response){
+  let bookId = request.params.bookId;
+  let sql = 'DELETE FROM books WHERE id=$1;';
+  let safeValues = [bookId];
+  client.query(sql, safeValues)
+    .then(sqlResults => {
+      console.log('sql results from Delete',sqlResults);
+      response.redirect('/');
+    })
+}
+
+function getBooks(request, response){
+  let sqlQuery = 'SELECT * FROM books;';
   return client.query(sqlQuery)
     .then(resultsFromDatabase => {
-      if(resultsFromDatabase.rows.rowCount === 0){
-        response.render('pages/searches/new.ejs')
-      } else {response.render('pages/searches/index.ejs', {bookObject: resultsFromDatabase.rows});
-        //sending forward an object called bookObject
+      if(resultsFromDatabase.rowCount === 0){
+        response.status(200).render('pages/searches/new.ejs');
+      } else {
+        response.render('pages/searches/index.ejs', {bookObject: resultsFromDatabase.rows});
       }
     }).catch(error => console.log(error))
-})
+}
 
-app.get('/booksearch', (request, response) => {
-  response.render('pages/searches/new.ejs')
-})
+function addToFavorites(request, response){
+  let {title, authors, description, image, isbn} = request.body;
 
-app.get('/hello', (request, response) => {
-  response.status(200).send('hello from the backend')
-});
+  let sql = 'INSERT INTO books (title, author, description, isbn, image) VALUES ($1, $2, $3, $4, $5) RETURNING id;';
 
-app.get('/searches', (request, response) => {
-  response.render('pages/searches/show.ejs');
-});
+  let safeValue = [title, authors, description, isbn, image];
 
-// app.get('/new', (request, response) => {
-//   response.render('./')
-// })
+  client.query(sql, safeValue)
+    .then(results => {
+      let id = results.rows[0].id;
+      response.status(200).redirect(`/books/${id}`);
+    })
+}
 
-function getBook (request, response){
-  // got to the database, get a specific book using an id and show details of that specific book
-  // first we are going to have to get the id from the url - request.params
-  // go into the database using that id to find that task
-  // display that task on its own ejs page
-  console.log('this is my request.params - hopefully this is my id:', request.params);
-  let id = request.params.id;
+function getOneBook (request, response){
+  let id = request.params.id; 
 
-  let sql = 'SELECT * FROM books WHERE id = $1';
-  let safeValue = [id];
+  let sql = 'SELECT * FROM books WHERE id = $1;';
+  let safeValue = [id]; 
 
   client.query(sql, safeValue)
     .then (sqlResults => {
-      if (id === safeValue) {
-        console.log(sqlResults.rows);
-        response.status(200).render('details.ejs', {bookObject2: sqlResults.rows[0]});
-      } else (response.status(200)
-      )
+      response.status(200).render('pages/searches/details.ejs', {bookObject2: sqlResults.rows[0]});
+
     });
 }
 
-// function getBooks (request, response){
-//   //get all of the books from my databse and display them on my index.ejs page
-//   let sql = 'SELECT * FROM books;'
-//   client.query(sql)
-//     .then(sqlResults => {
-//       let tasks = sqlResults.rows;
-//       response.status(200).render('index.ejs', {myBooks: books})
-//     })
-// }
-function showBook(request, response) {
+function showSearchForm(request, response) {
   //display the add form
-  response.status(200).render('add.ejs')
+  response.status(200).render('pages/searches/new.ejs')
 }
 
-// function addBook(request, response) {
-//   //collect information from the form and add it to the database
-//   let {image, title, author, description, isbn} = request.body; 
-//   let sql = 'INSERT into BOOKS (image, title, author, description, isbn) VALUES ($1, $2, $3, $4, $5) RETURNING ID;';
-//   let safeValue = [image, title, author, description, isbn];
-//   client.query(sql, safeValue)
-//     .then(results => {
-//       console.log(results.rows);
-//       response.redirect('/')
-//       response.redirect(`/books/${id}`);
-//     })
-// }
-
-app.post('/searches', (request, response) => {
-  // console.log(request.body.search);
+function getBooksFromAPI(request, response){
   let query = request.body.search[0];
   let titleOrAuthor = request.body.search[1];
 
@@ -113,19 +125,22 @@ app.post('/searches', (request, response) => {
 
   superagent.get(url)
     .then(results => {
-      // console.log(results.body.items);
       let bookArray = results.body.items;
-      const finalBookArray = bookArray.map(book => {
-        // on
-        // console.log(book.volumeInfo.industryIdentifiers[0].identifier);
+      const finalBookArray = bookArray.map(book => { 
         return new Book(book.volumeInfo)
-      });
-
-      // console.log(finalBookArray)
-
+      })
       response.render('pages/searches/show.ejs', {searchResults: finalBookArray})
     })
-})
+    .catch(err => {
+      console.error('ERROR', err);
+    })
+}
+
+const showForm = () => {
+  $('form').empty();
+};
+
+showForm();
 
 // HELPER FUNCTION
 function Book(info) {
@@ -138,9 +153,6 @@ function Book(info) {
   this.isbn = info.industryIdentifiers[0].identifier ? info.industryIdentifiers[0].identifier : 'no isbn available'
 }
 
-app.get('*', (request, response) => {
-  response.status(200).send('sorry cannot find that route')
-})
 
 client.on('error', err => console.log(err));
 client.connect()
@@ -149,4 +161,3 @@ client.connect()
       console.log(`listening on ${PORT}`);
     })
   })
-
