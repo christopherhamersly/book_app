@@ -136,9 +136,9 @@ function getBooksFromAPI(request, response){
     })
 }
 
-const showForm = () => {
-  $('form').empty();
-};
+// const showForm = () => {
+//   $('form').empty();
+// };
 
 showForm();
 
