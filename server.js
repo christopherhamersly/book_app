@@ -21,6 +21,7 @@ app.set('view engine', 'ejs');
 app.use(methodOverride('_method'));
   
 
+
 //Routes
 
 app.get('/', getBooks); // rendering our home page which shows all our saved books from our database
@@ -28,12 +29,14 @@ app.get('/add', showSearchForm); // shows our search form
 app.get('/books/:id', getOneBook); // shows our detail page
 app.post('/searches', getBooksFromAPI); // takes in our search form information and displays our show.ejs page - results from our API
 app.post('/details', addToFavorites); // takes form data from the API and adds a book to our database and then redirects to a detail page
+
 app.put('/update/:bookId', updateBook );
 app.delete('/delete/:bookId', deleteBook);
 
 app.get('*', (request, response) => {
   response.status(200).send('sorry cannot find that route')
 })
+
 
 //lets us translate our post to a put
 
@@ -76,10 +79,10 @@ function getBooks(request, response){
       } else {
         response.render('pages/searches/index.ejs', {bookObject: resultsFromDatabase.rows});
       }
-    }).catch(error => console.log(error))
-}
-
+  }).catch(error => console.log(error));
+        
 function addToFavorites(request, response){
+
   let {title, authors, description, image, isbn} = request.body;
 
   let sql = 'INSERT INTO books (title, author, description, isbn, image) VALUES ($1, $2, $3, $4, $5) RETURNING id;';
@@ -101,6 +104,51 @@ function getOneBook (request, response){
 
   client.query(sql, safeValue)
     .then (sqlResults => {
+=======
+  //collect the information from the form
+  console.log('information from my form', request.body);
+
+  let {title, authors, description, image_url, isbn} = request.body;
+
+  // put the database
+
+  let sql = 'INSERT INTO books (title, author, description, isbn, image) VALUES ($1, $2, $3, $4, $5) RETURNING id;';
+
+  let safeValue = [title, authors, description, isbn, image_url];
+
+  client.query(sql, safeValue)
+    .then(results => {
+      console.log('results from postgres', results.rows);
+      // [ { id: 3 } ]
+      let id = results.rows[0].id;
+      // redirect to the detail page
+      response.status(200).redirect(`/books/${id}`);
+    })
+}
+
+function getOneBook (request, response){
+  // got to the database, get a specific book using an id and show details of that specific book
+  // first we are going to have to get the id from the url - request.params
+  // go into the database using that id to find that task
+  // display that task on its own ejs page
+  // console.log('this is my request.params - hopefully this is my id:', request.params);
+  let id = request.params.id; // 2
+
+  let sql = 'SELECT * FROM books WHERE id = $1;';
+  let safeValue = [id]; // [2]
+
+  client.query(sql, safeValue)
+    .then (sqlResults => {
+
+      console.log('my sql results', sqlResults.rows);
+      // [ { id: 1,
+      //   image: 'http://books.google.com/books/content?id=EJUwetZIMZcC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api',
+      //   title: 'To Kill a Mockingbird Study Guide and Student Workbook (Enhanced Ebook)',
+      //   author: 'no author available',
+      //   description: 'no description available',
+      //   isbn: '9781609339005' } ]
+
+
       response.status(200).render('pages/searches/details.ejs', {bookObject2: sqlResults.rows[0]});
 
     });
@@ -129,6 +177,7 @@ function getBooksFromAPI(request, response){
       const finalBookArray = bookArray.map(book => { 
         return new Book(book.volumeInfo)
       })
+
       response.render('pages/searches/show.ejs', {searchResults: finalBookArray})
     })
     .catch(err => {
@@ -136,11 +185,13 @@ function getBooksFromAPI(request, response){
     })
 }
 
+
 // const showForm = () => {
 //   $('form').empty();
 // };
 
-showForm();
+// showForm();
+
 
 // HELPER FUNCTION
 function Book(info) {
