@@ -136,11 +136,7 @@ function getBooksFromAPI(request, response){
     })
 }
 
-// const showForm = () => {
-//   $('form').empty();
-// };
 
-showForm();
 
 // HELPER FUNCTION
 function Book(info) {
