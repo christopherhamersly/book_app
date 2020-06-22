@@ -100,11 +100,11 @@ function getOneBook (request, response){
   let id = request.params.id; 
 
   let sql = 'SELECT * FROM books WHERE id = $1;';
-  let safeValue = [id]; 
+  let safeValue = [id];
 
   client.query(sql, safeValue)
     .then (sqlResults => {
-=======
+
   //collect the information from the form
   console.log('information from my form', request.body);
 
@@ -124,7 +124,7 @@ function getOneBook (request, response){
       // redirect to the detail page
       response.status(200).redirect(`/books/${id}`);
     })
-}
+});
 
 function getOneBook (request, response){
   // got to the database, get a specific book using an id and show details of that specific book
@@ -191,10 +191,10 @@ function Book(info) {
   // const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
 
   this.image = info.imageLinks.thumbnail ? info.imageLinks.thumbnail : 'https://i.imgur.com/J5LVHEL.jpg';
-  this.title = info.title ? info.title : 'no title available';
-  this.author = info.author ? info.author : 'no author available';
-  this.description = info.description ? info.description : 'no description available';
-  this.isbn = info.industryIdentifiers[0].identifier ? info.industryIdentifiers[0].identifier : 'no isbn available'
+  this.title = info.title; 
+  this.author = info.author;
+  this.description = info.description;
+  this.isbn = info.industryIdentifiers[0].identifier;
 }
 
 
