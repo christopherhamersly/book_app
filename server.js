@@ -194,10 +194,10 @@ function Book(info) {
   // const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
 
   this.image = info.imageLinks.thumbnail ? info.imageLinks.thumbnail : 'https://i.imgur.com/J5LVHEL.jpg';
-  this.title = info.title; 
-  this.author = info.author;
-  this.description = info.description;
-  this.isbn = info.industryIdentifiers[0].identifier;
+  this.title = info.title ? info.title: 'no title available';
+  this.author = info.author? info.author: 'no author available';
+  this.description = info.description ? info.description: 'no description available';
+  this.isbn = info.industryIdentifiers[0].identifier ? info.industryIdentifiers[0].identifier : 'no isbn available';
 }
 
 
