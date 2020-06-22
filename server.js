@@ -19,7 +19,7 @@ app.use(express.static('public'));
 // allows ejs to work - look in the views folder for your template
 app.set('view engine', 'ejs');
 app.use(methodOverride('_method'));
-  
+
 
 
 //Routes
@@ -79,8 +79,10 @@ function getBooks(request, response){
       } else {
         response.render('pages/searches/index.ejs', {bookObject: resultsFromDatabase.rows});
       }
-  }).catch(error => console.log(error));
-        
+    }).catch(error => console.log(error));
+
+}
+
 function addToFavorites(request, response){
 
   let {title, authors, description, image, isbn} = request.body;
@@ -96,35 +98,36 @@ function addToFavorites(request, response){
     })
 }
 
-function getOneBook (request, response){
-  let id = request.params.id; 
+// function getOneBook (request, response){
+//   let id = request.params.id; 
 
-  let sql = 'SELECT * FROM books WHERE id = $1;';
-  let safeValue = [id];
+//   let sql = 'SELECT * FROM books WHERE id = $1;';
+//   let safeValue = [id];
 
-  client.query(sql, safeValue)
-    .then (sqlResults => {
+//   client.query(sql, safeValue)
+//     .then (sqlResults => {
 
-  //collect the information from the form
-  console.log('information from my form', request.body);
+//       //collect the information from the form
+//       console.log('information from my form', request.body);
 
-  let {title, authors, description, image_url, isbn} = request.body;
+//       let {title, authors, description, image_url, isbn} = request.body;
 
-  // put the database
+//       // put the database
 
-  let sql = 'INSERT INTO books (title, author, description, isbn, image) VALUES ($1, $2, $3, $4, $5) RETURNING id;';
+//       let sql = 'INSERT INTO books (title, author, description, isbn, image) VALUES ($1, $2, $3, $4, $5) RETURNING id;';
 
-  let safeValue = [title, authors, description, isbn, image_url];
+//       let safeValue = [title, authors, description, isbn, image_url];
 
-  client.query(sql, safeValue)
-    .then(results => {
-      console.log('results from postgres', results.rows);
-      // [ { id: 3 } ]
-      let id = results.rows[0].id;
-      // redirect to the detail page
-      response.status(200).redirect(`/books/${id}`);
-    })
-});
+//       client.query(sql, safeValue)
+//         .then(results => {
+//           console.log('results from postgres', results.rows);
+//           // [ { id: 3 } ]
+//           let id = results.rows[0].id;
+//           // redirect to the detail page
+//           response.status(200).redirect(`/books/${id}`);
+//         })
+//     });
+// }
 
 function getOneBook (request, response){
   // got to the database, get a specific book using an id and show details of that specific book
